@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Executive CEO Module — Command Center</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:#fff;color:#171717}
+table{border-spacing:0;border-collapse:collapse}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#f5f5f5}
+::-webkit-scrollbar-thumb{background:#d4d4d8;border-radius:3px}
+.fb{padding:10px 14px;border-radius:6px;text-align:center;font-size:12px;font-weight:600;line-height:1.3;min-width:100px;max-width:160px;word-wrap:break-word;white-space:pre-line}
+.fa{font-size:14px;color:#a3a3a3;margin:0 3px;display:flex;align-items:center;flex-shrink:0}
+.fd{width:100%;padding:10px;border-radius:6px;text-align:center;font-size:11px;border:2px dashed;max-width:110px;word-wrap:break-word}
+td{max-width:280px;word-wrap:break-word;overflow-wrap:break-word}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+var h=React.createElement,useState=React.useState,Frag=React.Fragment;
+var TODAY=new Date(2026,3,3);
+var MO="'JetBrains Mono',monospace",SA="'DM Sans',sans-serif";
+var CL={brand:'#d97706',mkt:'#059669',course:'#2563eb',enroll:'#db2777',sol:'#7c3aed',venue:'#ea580c',fin:'#0891b2',ops:'#475569',
+  red:'#dc2626',bg:'#fff',card:'#fafafa',bdr:'#e5e5e5',alt:'#f5f5f5',
+  txt:'#171717',mid:'#525252',lt:'#a3a3a3',ft:'#d4d4d4',gd:'#f0f0f0'};
+
+/*
+Working-day calendar: Songkran Apr 13-15 skipped. Sat/Sun skipped.
+All dates verified against actual working days.
+*/
+var WS=[
+{id:'brand',nm:'Brand & Design',c:CL.brand,
+ ow:'Nink + Ben + p\'White \u00B7 Ext. Designer produces',
+ tasks:[
+  {t:'Business objective, ICP & brand direction',s:'2026-04-07',e:'2026-04-10',w:'Nink + Ben + p\'White',a:'p\'White',st:'urgent',d:''},
+  {t:'Brand name & visual identity',s:'2026-04-07',e:'2026-04-10',w:'Nink + p\'White',a:'p\'White',st:'urgent',d:''},
+  {t:'Design system & brand guidelines',s:'2026-04-16',e:'2026-04-22',w:'Ext. Designer',a:'p\'White',st:'pending',d:'Brand identity locked (Apr 10)'},
+]},
+{id:'fin',nm:'Financials & Commercial',c:CL.fin,
+ ow:'TBC',
+ tasks:[
+  {t:'Pricing strategy & payment terms (\u0E3F89,999, full payment, bank transfer)',s:'2026-04-07',e:'2026-04-10',w:'TBC',a:'p\'White',st:'urgent',d:''},
+  {t:'Budget & P&L model (venue, materials, marketing, team costs, net margin)',s:'2026-04-07',e:'2026-04-21',w:'TBC',a:'p\'White',st:'urgent',d:''},
+  {t:'Ext. Mkt team: commission structure & contract terms',s:'2026-04-16',e:'2026-04-21',w:'TBC',a:'p\'White',st:'urgent',d:'Pricing locked (Apr 10)'},
+  {t:'Design payment collection workflow (invoice, tracking, no-pay protocol)',s:'2026-04-20',e:'2026-04-24',w:'TBC + p\'Nu',a:'p\'White',st:'pending',d:'Pricing + budget done'},
+]},
+{id:'mkt',nm:'Marketing & Sales',c:CL.mkt,
+ ow:'Nink + Ben + p\'White (strategy) \u00B7 Ext. Mkt Team (execution)',
+ tasks:[
+  {t:'Marketing brief (positioning, course breakdown, sell content)',s:'2026-04-16',e:'2026-04-22',w:'Nink (commercial) + Ben (experience) + p\'White (course)',a:'p\'White',st:'pending',d:'Brand direction + pricing locked (Apr 10)'},
+  {t:'Brief + design system + commission terms handoff to Ext. Mkt team',s:'2026-04-23',e:'2026-04-23',w:'Nink + Ben',a:'p\'White',st:'pending',d:'Design system + brief + contract all done (Apr 22)'},
+  {t:'Website design & build',s:'2026-04-23',e:'2026-04-30',w:'Ben + Ext. Designer',a:'p\'White',st:'pending',d:'Design system (Apr 22)'},
+  {t:'Campaign assets (landing page, ads, content)',s:'2026-04-23',e:'2026-04-30',w:'Ext. Mkt Team',a:'Nink + Ben',st:'pending',d:'Brief + design system (Apr 22)'},
+  {t:'Launch & run promotion campaign',s:'2026-05-01',e:'2026-05-21',w:'Ext. Mkt Team',a:'Nink + Ben',st:'pending',d:'Website + assets ready (Apr 30)'},
+]},
+{id:'course',nm:'Course & Content',c:CL.course,
+ ow:'p\'White (design & curriculum) \u00B7 Ben (experience & frontend) \u00B7 Ext. Designer (materials)',
+ tasks:[
+  {t:'Curriculum outline & learning objectives (Day 1 + Day 2)',s:'2026-04-07',e:'2026-04-21',w:'p\'White',a:'p\'White',st:'urgent',d:''},
+  {t:'Session plans, exercises & case studies',s:'2026-04-22',e:'2026-05-07',w:'p\'White',a:'p\'White',st:'pending',d:'Curriculum outline done (Apr 21)'},
+  {t:'Participant experience design (pre / during / post program)',s:'2026-04-16',e:'2026-05-13',w:'Ben',a:'p\'White',st:'pending',d:'Brand identity locked (Apr 10)'},
+  {t:'Pre-program comms templates (confirmation, logistics, prep materials)',s:'2026-05-11',e:'2026-05-15',w:'Ben',a:'p\'White',st:'pending',d:'Experience design + confirmed list progressing'},
+  {t:'Course materials production (decks, workbooks, handouts)',s:'2026-05-07',e:'2026-05-18',w:'Ext. Designer',a:'p\'White',st:'pending',d:'Session plans done (May 7) + design system'},
+  {t:'Final review & approval of materials',s:'2026-05-18',e:'2026-05-20',w:'p\'White',a:'p\'White',st:'pending',d:'Materials ready'},
+  {t:'Send materials to participants',s:'2026-05-21',e:'2026-05-26',w:'Ben',a:'p\'White',st:'pending',d:'Approved + confirmed list locked (May 21)'},
+]},
+{id:'enroll',nm:'Enrollment & Selection',c:CL.enroll,
+ ow:'Ben (assessment & people) \u00B7 Nink (workflow & ops)',
+ tasks:[
+  {t:'Design application & assessment criteria',s:'2026-04-16',e:'2026-04-22',w:'Ben (assessment design) + Nink (workflow design)',a:'p\'White',st:'pending',d:'Brand direction + curriculum outline in progress'},
+  {t:'Build application form & screening flow',s:'2026-04-23',e:'2026-04-29',w:'Ben',a:'p\'White',st:'pending',d:'Criteria done (Apr 22) + design system (Apr 22)'},
+  {t:'Review applications & approve (rolling, 3-day turnaround)',s:'2026-05-01',e:'2026-05-18',w:'Nink + Ben + p\'White',a:'p\'White',st:'pending',d:'Promo live + form ready (May 1)'},
+  {t:'Payment collection & tracking',s:'2026-05-11',e:'2026-05-21',w:'TBC + p\'Nu',a:'',st:'pending',d:'Acceptances sent + workflow ready'},
+  {t:'Waitlist, no-pay handling & final confirmed list (30 pax)',s:'2026-05-18',e:'2026-05-21',w:'Nink (ops) + Ben (comms)',a:'p\'White',st:'pending',d:'Payment deadline May 21'},
+]},
+{id:'sol',nm:'Solution (Prime Radiant)',c:CL.sol,
+ ow:'p\'Winut + p\'Bank (evaluate) \u00B7 Fivelab (if needed)',
+ tasks:[
+  {t:'Solution architecture & scope',s:'2026-04-20',e:'2026-04-24',w:'p\'Winut + p\'Bank',a:'',st:'pending',d:'Curriculum outline in progress (needs to know what to build)'},
+  {t:'Go/No-Go: Internal vs. Fivelab',s:'2026-04-24',e:'2026-04-24',w:'',a:'',st:'pending',d:'Architecture done (Apr 24)'},
+  {t:'Core development sprint',s:'2026-04-27',e:'2026-05-07',w:'p\'Winut + p\'Bank / Fivelab',a:'',st:'pending',d:'Go/No-Go decided (Apr 24)'},
+  {t:'QA & touch-up',s:'2026-05-11',e:'2026-05-18',w:'p\'Winut + p\'Bank / Fivelab',a:'',st:'pending',d:'Dev complete (May 7)'},
+  {t:'Demo-ready for Day 1',s:'2026-05-25',e:'2026-05-27',w:'p\'Winut + p\'Bank / Fivelab',a:'',st:'pending',d:'QA pass (May 18)'},
+  {t:'Deploy free trial (between Day 1 & Day 2)',s:'2026-06-01',e:'2026-06-26',w:'p\'Winut + p\'Bank / Fivelab',a:'',st:'pending',d:'Day 1 complete'},
+]},
+{id:'venue',nm:'Venue & Ops',c:CL.venue,
+ ow:'p\'Anne (venue) \u00B7 p\'Nu (operations)',
+ tasks:[
+  {t:'Book Andaz One Bangkok (room, AV, catering)',s:'2026-04-07',e:'2026-04-07',w:'p\'Anne',a:'',st:'urgent',d:'ASAP'},
+  {t:'Confirm Day 2 venue (Jun 28)',s:'2026-04-16',e:'2026-04-16',w:'p\'Anne',a:'',st:'pending',d:'ASAP'},
+  {t:'Day-of logistics (registration, seating, tech, flow)',s:'2026-05-11',e:'2026-05-27',w:'p\'Nu',a:'',st:'pending',d:'Venue confirmed'},
+]},
+{id:'ops',nm:'Operations',c:CL.ops,
+ ow:'Nink',
+ tasks:[
+  {t:'Set up project tracking & comms channels (Notion/Line/etc.)',s:'2026-04-07',e:'2026-04-10',w:'Nink',a:'',st:'urgent',d:''},
+  {t:'Weekly progress review & stakeholder alignment report',s:'2026-04-16',e:'2026-05-27',w:'Nink',a:'p\'White',st:'pending',d:'Ongoing \u2014 every week'},
+  {t:'Ext. team onboarding & expectation-setting (post-handoff)',s:'2026-04-23',e:'2026-04-24',w:'Nink',a:'',st:'pending',d:'Handoff done (Apr 23)'},
+  {t:'Campaign performance monitoring & course-correction',s:'2026-05-01',e:'2026-05-21',w:'Nink',a:'',st:'pending',d:'Campaign live (May 1)'},
+  {t:'Enrollment pipeline tracking (target: 30 confirmed)',s:'2026-05-01',e:'2026-05-21',w:'Nink',a:'',st:'pending',d:'Apps open (May 1)'},
+  {t:'Cross-stream dependency check & blocker resolution',s:'2026-04-16',e:'2026-05-27',w:'Nink',a:'p\'White',st:'pending',d:'Ongoing \u2014 flag to p\'White if stuck'},
+  {t:'Pre-Day 1 readiness checklist & dry run',s:'2026-05-22',e:'2026-05-27',w:'Nink',a:'p\'White',st:'pending',d:'All streams converging'},
+]},
+];
+
+var MS=[
+  {d:'2026-04-07',l:'Kickoff',c:true},
+  {d:'2026-04-10',l:'Brand + Pricing Locked',c:true},
+  {d:'2026-04-22',l:'Design System + Brief + Curriculum Done',c:true},
+  {d:'2026-04-23',l:'Handoff to Ext. Teams',c:true},
+  {d:'2026-04-24',l:'Solution Arch + Go/No-Go',c:true},
+  {d:'2026-05-01',l:'Sales Launch / Apps Open',c:true},
+  {d:'2026-05-07',l:'Session Plans + Materials Start',c:false},
+  {d:'2026-05-18',l:'Solution QA Done',c:true},
+  {d:'2026-05-21',l:'Payment Cutoff / 30 Confirmed',c:true},
+  {d:'2026-05-26',l:'Materials Sent',c:true},
+  {d:'2026-05-28',l:'DAY 1',c:true},
+  {d:'2026-06-28',l:'DAY 2',c:true},
+];
+
+function pD(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function fD(s){return pD(s).toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function dB(a,b){return Math.round((pD(b)-pD(a))/864e5)}
+function dT(s){return Math.round((pD(s)-TODAY)/864e5)}
+function wkOf(s){var d=pD(s);var day=d.getDay();var diff=d.getDate()-day+(day===0?-6:1);return new Date(d.setDate(diff)).toISOString().slice(0,10)}
+function crd(x){return Object.assign({background:CL.card,border:'1px solid '+CL.bdr,borderRadius:10,padding:'20px 24px',marginBottom:16},x||{})}
+function ttl(){return{fontSize:15,fontWeight:600,color:CL.txt,marginBottom:4}}
+function badge(bg,fg,t){return h('span',{style:{display:'inline-block',padding:'2px 8px',borderRadius:4,fontSize:11,fontWeight:600,background:bg,color:fg}},t)}
+
+// ─── Gantt helpers ─────────────────────────────────────────────────
+var GANTT_SD='2026-04-03',GANTT_ED='2026-07-05',GANTT_TOT=dB(GANTT_SD,GANTT_ED);
+function gmp(date){return Math.max(0,dB(GANTT_SD,date))/GANTT_TOT*100}
+function gbp(start,end,color){
+  var l=Math.max(0,dB(GANTT_SD,start))/GANTT_TOT*100;
+  var w=Math.max(0.6,dB(start,end)+1)/GANTT_TOT*100;
+  return{position:'absolute',left:l+'%',width:Math.min(w,100-l)+'%',height:20,borderRadius:3,background:color+'28',border:'1px solid '+color+'55',top:0,display:'flex',alignItems:'center',paddingLeft:4,overflow:'hidden'};
+}
+function getMarkers(){
+  var markers=[];var md=new Date(2026,3,6);var ed=pD(GANTT_ED);
+  while(md<ed){
+    var ds=md.getFullYear()+'-'+String(md.getMonth()+1).padStart(2,'0')+'-'+String(md.getDate()).padStart(2,'0');
+    markers.push({d:ds,l:md.toLocaleDateString('en-US',{month:'short',day:'numeric'})});
+    md=new Date(md.getTime()+7*864e5);
+  }
+  return markers;
+}
+function getAllOwners(){
+  var set={};
+  WS.forEach(function(ws){ws.tasks.forEach(function(t){
+    t.w.split(/[+\/,\u00B7]/).forEach(function(o){var n=o.replace(/\(.+?\)/g,'').trim();if(n&&n.length>1)set[n]=1});
+  })});
+  return Object.keys(set).sort();
+}
+
+// ─── OVERVIEW ───────────────────────────────────────────────────────
+function OverviewPage(){
+  var days=dT('2026-05-28');
+  var total=WS.reduce(function(s,w){return s+w.tasks.length},0);
+  var urgent=WS.reduce(function(s,w){return s+w.tasks.filter(function(t){return t.st==='urgent'}).length},0);
+  var gfs=useState('all');var ganttFilter=gfs[0];var setGanttFilter=gfs[1];
+  var gos=useState('all');var ganttOwner=gos[0];var setGanttOwner=gos[1];
+  var ghs=useState(null);var hovered=ghs[0];var setHovered=ghs[1];
+  var markers=getMarkers();
+  var allOwners=getAllOwners();
+
+  var filteredWS=WS.map(function(ws){
+    if(ganttFilter!=='all'&&ws.id!==ganttFilter)return null;
+    var tasks=ws.tasks;
+    if(ganttOwner!=='all'){tasks=tasks.filter(function(t){return t.w.toLowerCase().indexOf(ganttOwner.toLowerCase())>=0})}
+    if(tasks.length===0)return null;
+    return{nm:ws.nm,c:ws.c,id:ws.id,tasks:tasks};
+  }).filter(Boolean);
+
+  return h('div',null,
+    // Stats
+    h('div',{style:{display:'flex',gap:10,marginBottom:14,flexWrap:'wrap'}},
+      stC(CL.red,'Days to Day 1',days,'May 28, Andaz'),
+      stC(CL.brand,'Urgent',urgent,'This week'),
+      stC(CL.course,'Tasks',total,'8 streams'),
+      stC(CL.mkt,'Revenue','\u0E3F2.7M','30\u00D789,999')
+    ),
+
+    // Key dates
+    h('div',{style:{marginBottom:16,display:'flex',flexWrap:'wrap',gap:6}},
+      MS.map(function(m,i){
+        var d=dT(m.d);
+        return h('div',{key:i,style:{display:'inline-flex',alignItems:'center',gap:4,padding:'3px 10px',background:m.c?CL.red+'08':CL.alt,border:'1px solid '+(m.c?CL.red+'22':CL.bdr),borderRadius:20,fontSize:11}},
+          h('span',{style:{fontFamily:MO,fontWeight:600,color:m.c?CL.red:CL.lt,fontSize:10}},fD(m.d)),
+          h('span',{style:{color:CL.txt,fontWeight:500}},m.l),
+          d>0?h('span',{style:{fontFamily:MO,fontSize:9,color:d<=7?CL.red:CL.lt}},d+'d'):null
+        );
+      })
+    ),
+
+    // ── GANTT CHART
+    h('div',{style:crd({overflowX:'auto',padding:'20px 20px'})},
+      h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'flex-start',flexWrap:'wrap',gap:10,marginBottom:12}},
+        h('div',null,
+          h('div',{style:ttl()},'Project Timeline'),
+          h('div',{style:{fontSize:11,color:CL.lt,fontFamily:MO}},'Working days only \u00B7 Weekends + holidays excluded')
+        ),
+        h('div',{style:{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}},
+          h('div',{style:{display:'flex',alignItems:'center',gap:4}},
+            h('span',{style:{fontSize:10,color:CL.lt,fontFamily:MO}},'Stream:'),
+            h('select',{value:ganttFilter,onChange:function(e){setGanttFilter(e.target.value)},style:{fontSize:11,padding:'4px 8px',borderRadius:5,border:'1px solid '+CL.bdr,fontFamily:SA,background:'#fff',cursor:'pointer'}},
+              h('option',{value:'all'},'All Streams'),
+              WS.map(function(ws){return h('option',{key:ws.id,value:ws.id},ws.nm)})
+            )
+          ),
+          h('div',{style:{display:'flex',alignItems:'center',gap:4}},
+            h('span',{style:{fontSize:10,color:CL.lt,fontFamily:MO}},'Owner:'),
+            h('select',{value:ganttOwner,onChange:function(e){setGanttOwner(e.target.value)},style:{fontSize:11,padding:'4px 8px',borderRadius:5,border:'1px solid '+CL.bdr,fontFamily:SA,background:'#fff',cursor:'pointer'}},
+              h('option',{value:'all'},'All Owners'),
+              allOwners.map(function(o){return h('option',{key:o,value:o},o)})
+            )
+          ),
+          (ganttFilter!=='all'||ganttOwner!=='all')?h('button',{onClick:function(){setGanttFilter('all');setGanttOwner('all')},style:{fontSize:10,padding:'4px 8px',borderRadius:5,border:'1px solid '+CL.bdr,background:CL.alt,cursor:'pointer',fontFamily:SA,color:CL.mid}},'Reset'):null
+        )
+      ),
+      h('div',{style:{minWidth:1000}},
+        // Week headers
+        h('div',{style:{display:'flex',marginLeft:280}},
+          h('div',{style:{flex:1,position:'relative',height:28}},
+            markers.map(function(w,i){return h('div',{key:i,style:{position:'absolute',left:gmp(w.d)+'%',fontSize:9,color:CL.lt,fontFamily:MO,transform:'translateX(-50%)',borderLeft:'1px solid '+CL.gd,paddingLeft:3,height:20,zIndex:1}},w.l)}),
+            MS.filter(function(m){return m.c}).map(function(m,i){
+              return h('div',{key:'m'+i,title:fD(m.d)+': '+m.l,style:{position:'absolute',left:gmp(m.d)+'%',top:22,width:0,height:0,borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderTop:'5px solid '+CL.red,transform:'translateX(-50%)',cursor:'default',zIndex:2}});
+            })
+          )
+        ),
+        h('div',{style:{display:'flex',marginLeft:280,marginBottom:2}},
+          h('div',{style:{flex:1,position:'relative',height:12}},
+            h('div',{style:{position:'absolute',left:gmp('2026-04-03')+'%',fontSize:8,color:CL.red,fontFamily:MO,fontWeight:700,transform:'translateX(-50%)',zIndex:1}},'TODAY')
+          )
+        ),
+        filteredWS.length===0?h('div',{style:{padding:20,textAlign:'center',color:CL.lt,fontSize:12}},'No tasks match the current filters.'):
+        filteredWS.map(function(ws,wi){
+          return h('div',{key:ws.id+wi,style:{marginBottom:6}},
+            h('div',{style:{display:'flex',alignItems:'center',height:20,marginBottom:1}},
+              h('div',{style:{width:280,flexShrink:0,color:ws.c,fontSize:11,fontWeight:700,textAlign:'right',paddingRight:14,fontFamily:MO}},ws.nm)
+            ),
+            ws.tasks.map(function(t,ti){
+              var isAsap=t.d==='ASAP';
+              var sameDayTask=t.s===t.e;
+              var isOngoing=t.d&&t.d.indexOf('Ongoing')>=0;
+              var taskKey=ws.id+'-'+ti;
+              var isHov=hovered===taskKey;
+              return h('div',{key:ti,
+                onMouseEnter:function(){setHovered(taskKey)},
+                onMouseLeave:function(){setHovered(null)},
+                style:{display:'flex',alignItems:'center',marginBottom:1,background:isHov?ws.c+'06':'transparent',borderRadius:3,transition:'background 0.15s',position:'relative'}},
+                h('div',{title:t.t+' \u2014 '+t.w,style:{width:280,flexShrink:0,fontSize:11,color:isHov?CL.txt:CL.mid,textAlign:'right',paddingRight:14,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',fontWeight:isHov?600:400,transition:'color 0.15s'}},t.t),
+                h('div',{style:{flex:1,position:'relative',height:22}},
+                  markers.map(function(w,i){return h('div',{key:'g'+i,style:{position:'absolute',left:gmp(w.d)+'%',top:0,width:1,height:'100%',background:CL.gd}})}),
+                  h('div',{style:{position:'absolute',left:gmp('2026-04-03')+'%',top:0,width:1.5,height:'100%',background:CL.red+'44',zIndex:1}}),
+                  isAsap?h('div',{style:{position:'absolute',left:gmp(t.s)+'%',top:3,transform:'translateX(-50%)',zIndex:2}},
+                    h('div',{style:{fontSize:8,fontWeight:700,color:ws.c,fontFamily:MO,background:ws.c+'15',padding:'1px 6px',borderRadius:3,border:'1px solid '+ws.c+'33'}},'ASAP')
+                  ):sameDayTask&&!isOngoing?h('div',{style:{position:'absolute',left:gmp(t.s)+'%',top:4,width:10,height:10,borderRadius:'50%',background:ws.c,border:'2px solid #fff',transform:'translateX(-50%)',boxShadow:'0 0 0 1px '+ws.c+'44',zIndex:2}}):
+                  h('div',{style:Object.assign({},gbp(t.s,t.e,ws.c),{zIndex:2},isOngoing?{borderStyle:'dashed',background:ws.c+'12'}:{},isHov?{background:ws.c+'44',border:'1px solid '+ws.c+'88'}:{})},
+                    h('span',{style:{fontSize:8,color:ws.c,fontFamily:MO,fontWeight:600,whiteSpace:'nowrap'}},isOngoing?'ongoing':fD(t.s)+'\u2013'+fD(t.e))
+                  )
+                )
+              );
+            })
+          );
+        }),
+        (ganttFilter!=='all'||ganttOwner!=='all')?h('div',{style:{marginTop:8,marginLeft:280,fontSize:10,color:CL.mid,fontFamily:MO}},
+          'Showing: '+(ganttFilter!=='all'?WS.find(function(w){return w.id===ganttFilter}).nm:'All streams')+
+          (ganttOwner!=='all'?' \u00B7 Owner: '+ganttOwner:'')+
+          ' \u00B7 '+filteredWS.reduce(function(s,ws){return s+ws.tasks.length},0)+' tasks'
+        ):null,
+        h('div',{style:{display:'flex',gap:14,marginTop:10,flexWrap:'wrap',marginLeft:280}},
+          h('div',{style:{display:'flex',alignItems:'center',gap:3,fontSize:10,color:CL.lt}},
+            h('div',{style:{width:0,height:0,borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderTop:'5px solid '+CL.red}}),'Milestone'),
+          h('div',{style:{display:'flex',alignItems:'center',gap:3,fontSize:10,color:CL.lt}},
+            h('div',{style:{width:8,height:1.5,background:CL.red+'44'}}),'Today'),
+          h('div',{style:{display:'flex',alignItems:'center',gap:3,fontSize:10,color:CL.lt}},
+            h('div',{style:{width:8,height:8,borderRadius:'50%',background:CL.mid}}),'Single-day'),
+          h('div',{style:{display:'flex',alignItems:'center',gap:3,fontSize:10,color:CL.lt}},
+            h('div',{style:{width:16,height:6,borderRadius:2,background:CL.ops+'12',border:'1px dashed '+CL.ops+'55'}}),'Ongoing'),
+          WS.map(function(ws){return h('div',{key:ws.id,style:{display:'flex',alignItems:'center',gap:3,fontSize:10,color:CL.lt}},
+            h('div',{style:{width:10,height:8,borderRadius:2,background:ws.c+'28',border:'1px solid '+ws.c+'55'}}),ws.nm)})
+        )
+      )
+    ),
+
+    // ── WEEK BY WEEK
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Week-by-Week Focus'),
+      h('div',{style:{marginTop:8}},
+        wkB('Week 1','Apr 7\u201310',[
+          'Business objective, ICP & brand direction (all 3)',
+          'Brand name & visual identity (Nink + p\'White)',
+          'Pricing strategy & payment terms (TBC)',
+          'Budget & P&L starts (TBC)',
+          'Curriculum outline starts (p\'White)',
+          'Book Andaz ASAP (p\'Anne)',
+          'Set up project tracking & comms (Nink)',
+        ],CL.brand),
+        wkB('Week 2','Apr 16\u201322',[
+          'Design system & guidelines (Ext. Designer, Apr 16\u201322)',
+          'Marketing brief (all 3, Apr 16\u201322)',
+          'Budget & P&L continues (TBC)',
+          'Ext. Mkt commission & contract terms (TBC, Apr 16\u201321)',
+          'Curriculum outline continues (p\'White, done Apr 21)',
+          'Application & assessment criteria design (Ben + Nink)',
+          'Participant experience design starts (Ben)',
+          'Confirm Day 2 venue ASAP (p\'Anne)',
+          'Weekly progress review starts (Nink)',
+          'Cross-stream dependency check (Nink)',
+        ],CL.brand),
+        wkB('Week 3','Apr 22\u201328',[
+          'Handoff to Ext. teams (Apr 23)',
+          'Ext. team onboarding & expectation-setting (Nink, Apr 23\u201324)',
+          'Website build starts (Ben + Ext. Designer, Apr 23)',
+          'Campaign assets production starts (Ext. Mkt, Apr 23)',
+          'Payment workflow design (TBC + p\'Nu, Apr 20\u201324)',
+          'Solution architecture (p\'Winut + p\'Bank, Apr 20\u201324)',
+          'Go/No-Go: Internal vs. Fivelab (Apr 24)',
+          'Build application form (Ben, Apr 23\u201329)',
+          'Session plans start (p\'White, Apr 22)',
+          'Dev sprint starts if Go (Apr 27)',
+        ],CL.course),
+        wkB('Week 4','Apr 29\u2013May 1',[
+          'Website + campaign assets finalized (Apr 30)',
+          'Application form complete (Apr 29)',
+          'SALES LAUNCH: May 1 \u2014 campaign live, apps open',
+          'Campaign monitoring starts (Nink)',
+          'Enrollment pipeline tracking starts (Nink)',
+          'Session plans in progress (p\'White)',
+          'Dev sprint running',
+        ],CL.mkt),
+        wkB('Week 5','May 4\u201310',[
+          'Session plans finalized (p\'White, May 7)',
+          'Course materials production starts (Ext. Designer, May 7)',
+          'Dev sprint completes (May 7)',
+          'Applications reviewed rolling (all 3)',
+        ],CL.course),
+        wkB('Week 6','May 11\u201317',[
+          'Day-of logistics planning starts (p\'Nu)',
+          'Solution QA begins',
+          'Pre-program comms templates (Ben, May 11\u201315)',
+          'Experience design wraps up (Ben, May 13)',
+          'Applications continue (all 3 review)',
+          'Payment collection starts (TBC + p\'Nu)',
+          'Campaign performance course-correction (Nink)',
+        ],CL.enroll),
+        wkB('Week 7','May 18\u201322',[
+          'Solution QA complete (May 18)',
+          'Course materials complete (May 18)',
+          'Final material review (p\'White, May 18\u201320)',
+          'Payment cutoff & 30 confirmed (May 21)',
+          'Waitlist/no-pay handling wraps up',
+          'Materials sent to participants (Ben, May 21\u201326)',
+        ],CL.sol),
+        wkB('Week 8','May 25\u201328',[
+          'Solution demo-ready (May 25\u201327)',
+          'Pre-Day 1 readiness checklist & dry run (Nink)',
+          'Day-of logistics finalized (p\'Nu)',
+          'Materials distribution complete',
+          'DAY 1: May 28 \u2014 Andaz, One Bangkok',
+        ],CL.red),
+        wkB('Jun','Jun 1\u201328',[
+          'Free trial deployment (Dev team)',
+          'DAY 2: Jun 28',
+        ],CL.red)
+      )
+    ),
+
+    // ── TEAM
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Team \u2014 Internal'),
+      h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))',gap:8,marginTop:10}},
+        tC('p\'Anne',CL.venue,'Venue booking & coordination (Andaz, Day 2)'),
+        tC('p\'White',CL.red,'Approver of all. Owner of course curriculum & design'),
+        tC('Nink',CL.ops,'Backend/operations. Workflow design, commercial oversight, cross-stream monitoring.'),
+        tC('Ben',CL.course,'Frontends & people. Participant-facing materials, experience design, assessment.'),
+        tC('p\'Winut',CL.sol,'Solution evaluation & development. Assesses if Fivelab is needed or internal build is feasible'),
+        tC('p\'Bank',CL.sol,'Solution evaluation & development. Assesses if Fivelab is needed or internal build is feasible'),
+        tC('p\'Nu',CL.venue,'Payment collection, day-of logistics, event ops, documents.')
+      )
+    ),
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Team \u2014 External'),
+      h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fill, minmax(220px, 1fr))',gap:8,marginTop:10}},
+        tC('Ext. Designer','#0d9488','Design system, brand assets, course materials production'),
+        tC('Ext. Mkt Team',CL.mkt,'Campaign execution, lead nurture, application flow management'),
+        tC('Fivelab',CL.sol,'External dev option for Prime Radiant (if Go at Apr 24 decision)')
+      )
+    )
+  );
+}
+
+function stC(c,l,v,n){
+  return h('div',{style:{flex:'1 1 120px',background:CL.card,border:'1px solid '+CL.bdr,borderLeft:'3px solid '+c,borderRadius:8,padding:'10px 14px'}},
+    h('div',{style:{fontSize:10,color:CL.lt,textTransform:'uppercase',letterSpacing:'0.04em',fontFamily:MO}},l),
+    h('div',{style:{fontSize:20,fontWeight:700,color:CL.txt,marginTop:2}},v),
+    n?h('div',{style:{fontSize:10,color:CL.mid,marginTop:1}},n):null
+  );
+}
+function wkB(week,dates,items,c){
+  return h('div',{style:{display:'flex',gap:12,padding:'8px 0',borderBottom:'1px solid '+CL.gd}},
+    h('div',{style:{width:90,flexShrink:0}},
+      h('div',{style:{fontSize:12,fontWeight:700,color:c}},week),
+      h('div',{style:{fontSize:10,color:CL.lt,fontFamily:MO}},dates)
+    ),
+    h('div',{style:{display:'flex',flexWrap:'wrap',gap:4,flex:1}},
+      items.map(function(item,i){return h('div',{key:i,style:{fontSize:11,color:CL.txt,padding:'3px 8px',background:c+'08',border:'1px solid '+c+'18',borderRadius:4}},item)})
+    )
+  );
+}
+function tC(name,c,role){
+  return h('div',{style:{padding:'10px 14px',background:CL.alt,borderRadius:6,borderLeft:'3px solid '+c}},
+    h('div',{style:{fontSize:13,fontWeight:600,color:CL.txt}},name),
+    h('div',{style:{fontSize:11,color:CL.mid,marginTop:2,lineHeight:1.4}},role)
+  );
+}
+
+// ─── WORKFLOWS ──────────────────────────────────────────────────────
+function WorkflowsPage(){
+  return h('div',null,
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Workflow 1: Enrollment Flow'),
+      h('div',{style:{fontSize:12,color:CL.lt,fontFamily:MO}},'Ext. Mkt drives leads \u00B7 Ben manages people & assessment \u00B7 Nink designs workflow \u00B7 p\'White approves'),
+      h('div',{style:{marginTop:16,overflowX:'auto'}},
+        fRow([
+          fB('Prospect via\ncampaign','#f0fdf4',CL.mkt,'Ext. Mkt'),fA(),
+          fB('Visits website\n& applies','#eff6ff',CL.course,'Ben designed'),fA(),
+          fD2('Meets\ncriteria?',CL.enroll),fA(),
+          fB('All 3 review\np\'White approves','#fdf2f8',CL.enroll,'3-day turnaround'),fA(),
+          fB('Acceptance +\ninvoice sent','#fdf2f8',CL.enroll,'Ben + p\'Nu'),fA(),
+          fD2('Paid in\n7 days?',CL.enroll),fA(),
+          fB('CONFIRMED','#f0fdf4',CL.mkt,'Materials May 21\u201326')
+        ]),
+        h('div',{style:{marginTop:6,fontSize:11,color:CL.mid,paddingLeft:8}},
+          h('span',{style:{color:'#b91c1c',fontWeight:700,fontFamily:MO,fontSize:10}},'NO '),
+          'at criteria \u2192 Rejected with feedback (Ben). ',
+          h('span',{style:{color:'#b91c1c',fontWeight:700,fontFamily:MO,fontSize:10}},'NO '),
+          'at payment \u2192 No-pay protocol (below).'
+        )
+      )
+    ),
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Workflow 2: Payment & No-Pay Protocol'),
+      h('div',{style:{fontSize:12,color:CL.lt,fontFamily:MO}},'F11 handles payments \u00B7 TBC + p\'Nu collect \u00B7 Ben handles people comms'),
+      h('div',{style:{marginTop:16,overflowX:'auto'}},
+        fRow([
+          fB('Accepted','#fdf2f8',CL.enroll,''),fA(),
+          fB('Invoice sent\n\u0E3F89,999','#fdf2f8',CL.enroll,'Ben + p\'Nu'),fA(),
+          fD2('Paid?',CL.enroll),fA(),
+          fB('Receipt +\nconfirm','#f0fdf4',CL.mkt,'p\'Nu, 24h')
+        ]),
+        h('div',{style:{marginTop:12,padding:'12px 16px',background:'#fef2f2',borderRadius:6,borderLeft:'3px solid #dc2626'}},
+          h('div',{style:{fontSize:12,fontWeight:600,color:'#7f1d1d',marginBottom:8}},'If NOT paid:'),
+          h('div',{style:{overflowX:'auto'}},
+            fRow([
+              fB('Day 1\nReminder','#fef2f2','#b91c1c','Ben'),fA(),
+              fB('Day 5\nFinal notice','#fef2f2','#b91c1c','Ben'),fA(),
+              fB('Day 7\nSeat released','#fef2f2','#dc2626','Nink decides'),fA(),
+              fB('Waitlist #1\n3-day window','#fffbeb','#92400e','Ben comms'),fA(),
+              fD2('Paid?','#b91c1c'),fA(),
+              fB('Confirmed\nor next','#f5f5f5',CL.mid,'')
+            ])
+          ),
+          h('div',{style:{fontSize:11,color:'#7f1d1d',marginTop:8,fontWeight:600}},'HARD CUTOFF: May 21 \u2014 no new payments. Final list locked.')
+        )
+      )
+    ),
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Workflow 3: Internal Decision Flow'),
+      h('div',{style:{fontSize:12,color:CL.lt,fontFamily:MO}},'p\'White approves all decisions'),
+      h('div',{style:{marginTop:12,overflowX:'auto'}},
+        h('table',{style:{width:'100%',fontSize:12,minWidth:700}},
+          h('thead',null,h('tr',null,th2('Decision'),th2('Owner'),th2('Approver'),th2('By'),th2('Gate / Note'))),
+          h('tbody',null,
+            dR('Business objective, ICP & brand direction','Nink + Ben + p\'White','p\'White','Apr 10',''),
+            dR('Brand name & visual identity','Nink + p\'White','p\'White','Apr 10',''),
+            dR('Pricing strategy & payment terms','TBC','p\'White','Apr 10','Feeds marketing brief'),
+            dR('Budget & P&L model','TBC','p\'White','Apr 21',''),
+            dR('Design system & guidelines','Ext. Designer','p\'White','Apr 22','BLOCKS all downstream'),
+            dR('Marketing brief','Nink + Ben + p\'White','p\'White','Apr 22','After brand + pricing'),
+            dR('Curriculum outline','p\'White','p\'White','Apr 21',''),
+            dR('Ext. Mkt commission & contract','TBC','p\'White','Apr 21','Before handoff Apr 23'),
+            dR('Application & assessment criteria','Ben (assessment) + Nink (workflow)','p\'White','Apr 22','Needs brand + curriculum'),
+            dR('Payment workflow design','TBC + p\'Nu','p\'White','Apr 24',''),
+            dR('Solution scope / Fivelab','p\'Winut + p\'Bank','','Apr 24','Needs curriculum outline'),
+            dR('Campaign assets & website','Ben + Ext. teams','p\'White','Apr 30','Needs design system'),
+            dR('Participant approvals (rolling)','Nink + Ben + p\'White','p\'White','Rolling','3-day turnaround'),
+            dR('Course materials','Ext. Designer','p\'White','May 20','Quality check'),
+            dR('Final participant list','Nink + Ben','p\'White','May 21','Payment deadline')
+          )
+        )
+      )
+    ),
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Workflow 4: External Team Handoff'),
+      h('div',{style:{fontSize:12,color:CL.lt,fontFamily:MO}},'Nink = commercial & ops \u00B7 Ben = experience & all frontends'),
+      h('div',{style:{marginTop:16,overflowX:'auto'}},
+        fRow([
+          fB('Design system\n+ brief done','#fffbeb','#92400e','Apr 22'),fA(),
+          fB('Handoff meeting\nNink: commercial\n+ commission\nBen: experience','#f0f9ff','#0369a1','Apr 23'),fA(),
+          fB('Ext. team\nbuilds assets','#f0fdf4',CL.mkt,'Apr 23\u2013Apr 30'),fA(),
+          fD2('Nink + Ben\nreview?',CL.mkt),fA(),
+          fB('Sales\nlaunch','#f0fdf4',CL.mkt,'May 1')
+        ]),
+        h('div',{style:{marginTop:12,display:'flex',flexDirection:'column',gap:6}},
+          h('div',{style:{padding:'8px 12px',background:CL.alt,borderRadius:6,fontSize:12,color:CL.mid}},
+            h('strong',{style:{color:CL.txt}},'Weekly sync: '),'Nink + Ben + Ext. team. Nink: metrics, spend & commission. Ben: messaging & lead quality.'),
+          h('div',{style:{padding:'8px 12px',background:CL.alt,borderRadius:6,fontSize:12,color:CL.mid}},
+            h('strong',{style:{color:CL.txt}},'If volume off: '),'Nink adjusts spend/channels. ',
+            h('strong',{style:{color:CL.txt}},'If quality off: '),'Ben adjusts messaging. ',
+            h('strong',{style:{color:CL.txt}},'If at risk: '),'p\'White network activation.'),
+          h('div',{style:{padding:'8px 12px',background:CL.alt,borderRadius:6,fontSize:12,color:CL.mid}},
+            h('strong',{style:{color:CL.txt}},'Ext. delivers: '),'Campaign, lead nurture, app management, participant comms. ',
+            h('strong',{style:{color:CL.txt}},'F11 retains: '),'All decisions, payments, approvals.')
+        )
+      )
+    )
+  );
+}
+
+function fB(t,bg,c,n){return h('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}},h('div',{className:'fb',style:{background:bg,border:'1px solid '+c+'33',color:c}},t),n?h('div',{style:{fontSize:9,color:CL.lt,fontFamily:MO,textAlign:'center'}},n):null)}
+function fA(){return h('div',{className:'fa'},'\u2192')}
+function fD2(t,c){return h('div',{style:{display:'flex',flexDirection:'column',alignItems:'center',gap:2,flexShrink:0}},h('div',{className:'fd',style:{borderColor:c,color:c,background:c+'08'}},t))}
+function fRow(items){return h('div',{style:{display:'flex',alignItems:'center',flexWrap:'wrap',gap:4}},items)}
+function th2(t){return h('th',{style:{textAlign:'left',padding:'8px 10px',borderBottom:'2px solid '+CL.bdr,fontSize:10,color:CL.lt,fontFamily:MO,textTransform:'uppercase',letterSpacing:'0.04em',whiteSpace:'nowrap'}},t)}
+function dR(d,o,a,by,g){
+  return h('tr',null,
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontWeight:500,minWidth:180}},d),
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11,minWidth:120}},o),
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11,minWidth:70}},a||'\u2014'),
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11,fontFamily:MO,fontWeight:600,color:'#b91c1c',whiteSpace:'nowrap'}},by),
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11,color:g?'#92400e':CL.lt,fontWeight:g?600:400}},g||'\u2014')
+  );
+}
+
+// ─── TASKS (multi-view) ─────────────────────────────────────────────
+function TasksPage(){
+  var vs=useState('stream');var view=vs[0];var setView=vs[1];
+  var fs=useState('all');var filter=fs[0];var setFilter=fs[1];
+  var all=[];
+  WS.forEach(function(ws){ws.tasks.forEach(function(t){all.push(Object.assign({},t,{sn:ws.nm,si:ws.id,c:ws.c}))})});
+  all.sort(function(a,b){return pD(a.s)-pD(b.s)});
+  var bw={};all.forEach(function(t){var w=wkOf(t.s);if(!bw[w])bw[w]=[];bw[w].push(t)});
+  var wks=Object.keys(bw).sort();
+  var bo={};all.forEach(function(t){
+    var ow=t.w.split(/[+\/,\u00B7]/).map(function(o){return o.replace(/\(.+?\)/g,'').trim()}).filter(function(o){return o&&o.length>1});
+    ow.forEach(function(o){if(!bo[o])bo[o]=[];bo[o].push(t)});
+  });
+
+  return h('div',null,
+    h('div',{style:{display:'flex',gap:6,marginBottom:16,flexWrap:'wrap',alignItems:'center'}},
+      h('div',{style:{fontSize:12,fontWeight:600,color:CL.txt,marginRight:6}},'View:'),
+      ['stream','week','owner'].map(function(v){
+        return h('button',{key:v,onClick:function(){setView(v)},style:{
+          padding:'6px 14px',borderRadius:6,border:'1px solid '+(view===v?CL.txt:CL.bdr),
+          cursor:'pointer',fontSize:12,fontWeight:500,fontFamily:SA,
+          background:view===v?CL.txt:'#fff',color:view===v?'#fff':CL.mid
+        }},{stream:'By Workstream',week:'By Week',owner:'By Owner'}[v]);
+      })
+    ),
+    view==='stream'&&h('div',null,
+      h('div',{style:{display:'flex',gap:4,marginBottom:12,flexWrap:'wrap'}},
+        ['all'].concat(WS.map(function(w){return w.id})).map(function(f){
+          var ws=WS.find(function(w){return w.id===f});
+          return h('button',{key:f,onClick:function(){setFilter(f)},style:{
+            padding:'5px 10px',borderRadius:6,border:'1px solid '+(filter===f?(ws?ws.c:CL.txt):CL.bdr),
+            cursor:'pointer',fontSize:11,fontFamily:SA,background:filter===f?(ws?ws.c+'11':'#f5f5f5'):'#fff',color:filter===f?(ws?ws.c:CL.txt):CL.mid
+          }},f==='all'?'All':ws.nm);
+        })
+      ),
+      WS.filter(function(ws){return filter==='all'||ws.id===filter}).map(function(ws,i){
+        var showApprover=ws.id!=='sol'&&ws.id!=='venue'&&ws.id!=='ops';
+        return h('div',{key:i,style:crd({borderLeft:'3px solid '+ws.c})},
+          h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}},
+            h('div',null,h('div',{style:ttl()},ws.nm),h('div',{style:{fontSize:11,color:CL.lt,fontFamily:MO}},ws.ow)),
+            badge(ws.c+'11',ws.c,ws.tasks.length+' tasks')
+          ),
+          tTbl(ws.tasks.map(function(t){return Object.assign({},t,{sn:ws.nm,c:ws.c})}),showApprover)
+        );
+      })
+    ),
+    view==='week'&&h('div',null,
+      wks.map(function(wk){
+        var ts=bw[wk];
+        var we=function(){var d=pD(wk);d.setDate(d.getDate()+6);return d.toISOString().slice(0,10)}();
+        return h('div',{key:wk,style:crd({borderLeft:'3px solid '+CL.course})},
+          h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}},
+            h('div',{style:ttl()},fD(wk)+' \u2013 '+fD(we)),badge(CL.course+'11',CL.course,ts.length+' tasks')
+          ),tTbl(ts,true)
+        );
+      })
+    ),
+    view==='owner'&&h('div',null,
+      Object.keys(bo).sort().map(function(o){
+        return h('div',{key:o,style:crd()},
+          h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:10}},
+            h('div',{style:ttl()},o),badge(CL.alt,CL.mid,bo[o].length+' tasks')
+          ),tTbl(bo[o],true)
+        );
+      })
+    )
+  );
+}
+
+function tTbl(tasks,showApprover){
+  var cols=[th2('Task'),th2('Stream'),th2('Start'),th2('End'),th2('Owner')];
+  if(showApprover)cols.push(th2('Approver'));
+  cols.push(th2('Status'),th2('Depends on'));
+  return h('div',{style:{overflowX:'auto'}},h('table',{style:{width:'100%',fontSize:12,minWidth:750}},
+    h('thead',null,h('tr',null,cols)),
+    h('tbody',null,tasks.map(function(t,i){
+      var isAsap=t.d==='ASAP';
+      var isOngoing=t.d&&t.d.indexOf('Ongoing')>=0;
+      var cells=[
+        h('td',{key:'t',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontWeight:500,minWidth:200}},t.t),
+        t.sn?h('td',{key:'s',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd}},h('span',{style:{fontSize:10,padding:'1px 6px',borderRadius:3,background:(t.c||CL.mid)+'11',color:t.c||CL.mid,fontWeight:600,whiteSpace:'nowrap'}},t.sn)):h('td',{key:'s',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd}},''),
+        h('td',{key:'sd',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontFamily:MO,fontSize:10,whiteSpace:'nowrap'}},isAsap?'ASAP':fD(t.s)),
+        h('td',{key:'ed',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontFamily:MO,fontSize:10,whiteSpace:'nowrap'}},isAsap?'\u2014':(isOngoing?'Ongoing':fD(t.e))),
+        h('td',{key:'w',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11,minWidth:140}},t.w||'\u2014'),
+      ];
+      if(showApprover)cells.push(h('td',{key:'a',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11}},t.a||'\u2014'));
+      cells.push(
+        h('td',{key:'st',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd}},badge(t.st==='urgent'?'#fef2f2':'#f5f5f5',t.st==='urgent'?'#b91c1c':'#737373',t.st.toUpperCase())),
+        h('td',{key:'d',style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:10,color:CL.lt,minWidth:140}},t.d||'\u2014')
+      );
+      return h('tr',{key:i,style:{background:t.st==='urgent'?'#fef2f2':'transparent'}},cells);
+    }))
+  ));
+}
+
+// ─── COMMERCIAL ─────────────────────────────────────────────────────
+function CommercialPage(){
+  return h('div',null,
+    h('div',{style:{display:'flex',gap:10,marginBottom:20,flexWrap:'wrap'}},
+      stC(CL.mkt,'Price','\u0E3F89,999','Per seat'),
+      stC(CL.course,'Batch 1','30','CEO-owners, 200M\u20131B\u0E3F'),
+      stC(CL.brand,'Revenue','\u0E3F2.7M','Batch 1'),
+      stC(CL.sol,'Year','100 CEOs','3 batches')
+    ),
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Revenue Model'),
+      h('div',{style:{fontSize:13,color:CL.mid,margin:'8px 0',lineHeight:1.6}},
+        'Course fee (\u0E3F89,999) is front-door. Long-tail: Prime Radiant AI solution \u2014 free trial between Day 1 & Day 2, conversion to paid subscription.'
+      ),
+      h('div',{style:{display:'flex',gap:8,flexWrap:'wrap',marginTop:10}},
+        [{l:'Batch 1',v:'\u0E3F2,699,970',s:'30 pax'},{l:'Batch 2',v:'\u0E3F2,699,970',s:'30 (Jul\u2013Aug)'},{l:'Batch 3',v:'\u0E3F3,599,960',s:'40 (Oct\u2013Nov)'},{l:'Year Total',v:'\u0E3F8,999,900',s:'100 pax'},{l:'Solution',v:'TBD',s:'Post-trial'}].map(function(r,i){
+          return h('div',{key:i,style:{flex:'1 1 130px',background:CL.alt,borderRadius:6,padding:'10px 12px'}},
+            h('div',{style:{fontSize:10,color:CL.lt,fontFamily:MO}},r.l),
+            h('div',{style:{fontSize:18,fontWeight:700,color:CL.txt,marginTop:2}},r.v),
+            h('div',{style:{fontSize:10,color:CL.mid,marginTop:1}},r.s)
+          );
+        })
+      )
+    ),
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Financial Planning'),
+      h('div',{style:{fontSize:12,color:CL.lt,fontFamily:MO,marginBottom:10}},'Owner: TBC'),
+      h('div',{style:{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}},
+        finItem('Budget & P&L','Revenue vs. costs (venue, catering, materials, Ext. team fees, marketing spend). Target net margin.','Apr 21'),
+        finItem('Ext. Mkt Commission','Commission structure, payment terms, performance bonuses. Must be agreed before handoff.','Apr 21'),
+        finItem('Pricing & Terms','\u0E3F89,999 full payment. Bank transfer. 7-day payment window. No installments.','Apr 10'),
+        finItem('Payment Workflow','Invoice generation, tracking, collection process. No-pay escalation protocol.','Apr 24')
+      )
+    ),
+    h('div',{style:crd()},
+      h('div',{style:ttl()},'Key Financial Decisions'),
+      h('div',{style:{marginTop:10,overflowX:'auto'}},
+        h('table',{style:{width:'100%',fontSize:12,minWidth:400}},
+          h('thead',null,h('tr',null,th2('Item'),th2('Due'),th2('Note'))),
+          h('tbody',null,
+            dR3('Venue budget (Andaz)','Apr 21','Room + AV + catering for 30'),
+            dR3('Ext. Mkt team commission %','Apr 21','Before handoff Apr 23'),
+            dR3('Ext. Designer fees','Apr 21','Design system + materials'),
+            dR3('Course materials budget','May 7','Printing, workbooks, handouts'),
+            dR3('Payment terms communicated','May 1','In all acceptance comms'),
+            dR3('Final P&L reconciliation','May 28','Post Day 1')
+          )
+        )
+      )
+    )
+  );
+}
+
+function finItem(title,desc,due){
+  return h('div',{style:{padding:'12px 14px',background:CL.alt,borderRadius:6,borderLeft:'3px solid '+CL.fin}},
+    h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center'}},
+      h('div',{style:{fontSize:13,fontWeight:600,color:CL.txt}},title),
+      h('div',{style:{fontSize:10,fontFamily:MO,color:CL.red,fontWeight:600}},'Due '+due)
+    ),
+    h('div',{style:{fontSize:11,color:CL.mid,marginTop:4,lineHeight:1.5}},desc)
+  );
+}
+function dR3(d,by,n){
+  return h('tr',null,
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontWeight:500}},d),
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11,fontFamily:MO,fontWeight:600,color:'#b91c1c',whiteSpace:'nowrap'}},by),
+    h('td',{style:{padding:'7px 10px',borderBottom:'1px solid '+CL.gd,fontSize:11,color:CL.mid}},n)
+  );
+}
+
+// ─── APP ────────────────────────────────────────────────────────────
+function App(){
+  var ps=useState('overview');var pg=ps[0];var sP=ps[1];
+  var pages=[
+    {id:'overview',l:'Overview',draft:false},
+    {id:'tasks',l:'Tasks',draft:false},
+    {id:'workflows',l:'Workflows (Draft)',draft:true},
+    {id:'commercial',l:'Commercial (Draft)',draft:true}
+  ];
+  var pm={overview:h(OverviewPage),workflows:h(WorkflowsPage),tasks:h(TasksPage),commercial:h(CommercialPage)};
+  var todayStr=TODAY.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+  return h('div',{style:{minHeight:'100vh',background:CL.bg}},
+    h('header',{style:{padding:'16px 32px',borderBottom:'1px solid '+CL.bdr,display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:12}},
+      h('div',null,
+        h('div',{style:{fontSize:17,fontWeight:700,letterSpacing:'-0.02em'}},'Executive CEO Module \u2014 Command Center'),
+        h('div',{style:{fontSize:11,color:CL.lt,marginTop:2,fontFamily:MO}},todayStr+' \u00B7 F11 \u00B7 Batch 1 \u00B7 Andaz, One Bangkok \u00B7 30 pax')
+      ),
+      h('nav',{style:{display:'flex',gap:2,background:CL.alt,borderRadius:8,padding:3,border:'1px solid '+CL.bdr}},
+        pages.map(function(p){var a=pg===p.id;
+          return h('button',{key:p.id,onClick:function(){sP(p.id)},style:{
+            padding:'7px 14px',borderRadius:6,border:'none',cursor:'pointer',fontSize:12,fontWeight:a?600:500,fontFamily:SA,
+            background:a?(p.draft?CL.alt:'#fff'):'transparent',
+            color:a?(p.draft?CL.mid:CL.txt):(p.draft?CL.lt:CL.mid),
+            boxShadow:a&&!p.draft?'0 1px 3px rgba(0,0,0,0.08)':'none'
+          }},p.l);
+        })
+      )
+    ),
+    h('main',{style:{padding:'18px 32px',maxWidth:1440,margin:'0 auto'}},pm[pg])
+  );
+}
+ReactDOM.render(h(App),document.getElementById('root'));
+</script>
+</body>
+</html>
